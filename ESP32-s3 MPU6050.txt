@@ -1,0 +1,10 @@
+ESP32-s3 MPU6050
+
+#built firmware
+. "C:\Espressif\tools\Microsoft.v6.1.PowerShell_profile.ps1"
+cd d:\ESP32-S3
+idf.py build
+idf.py -p COM42 flash
+
+#simulator
+C:\Espressif\tools\python\v6.1\venv\Scripts\python.exe -m http.server 8765 --directory d:\ESP32-S3\web_sim
