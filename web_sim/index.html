@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ESP32-S3 + MPU6050 | Mô phỏng chiều chuyển động 3D</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <span class="dot" id="connDot"></span>
+        <div>
+          <h1>ESP32-S3 N16R8 + MPU6050</h1>
+          <p class="subtitle">Mô phỏng chiều chuyển động 6-DOF thời gian thực</p>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <button id="btnConnect" class="btn btn-primary">Kết nối USB Serial</button>
+        <button id="btnMock" class="btn btn-accent">Bật Giả lập (Mock)</button>
+        <select id="mockScenario" class="select" title="Kịch bản giả lập">
+          <option value="cycle">Chu trình tự động (Tất cả hướng)</option>
+          <option value="lr">Trái ↔ Phải (-X / +X)</option>
+          <option value="fb">Tiến ↔ Lùi (+Y / -Y)</option>
+          <option value="ud">Lên ↔ Xuống (+Z / -Z)</option>
+          <option value="tilted">Nghiêng 35° + Đẩy Tiến/Phải</option>
+          <option value="rotate">Xoay Roll / Pitch / Yaw</option>
+        </select>
+        <button id="btnCal" class="btn" disabled>Calibrate (CAL)</button>
+        <button id="btnReset" class="btn">Zero Yaw / Reset</button>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <section class="viewport-card">
+        <div id="sceneContainer" class="scene-container"></div>
+
+        <div class="hud-top-left">
+          <div class="dir-badge dir-static" id="dirBadge">ĐỨNG YÊN (STATIC)</div>
+          <div class="conn-label" id="connStatus">Chưa kết nối — Hãy cắm USB hoặc bật Giả lập</div>
+        </div>
+
+        <div class="hud-legend">
+          <span><i class="swatch x"></i> +X Phải</span>
+          <span><i class="swatch y"></i> +Y Tiến</span>
+          <span><i class="swatch z"></i> +Z Lên</span>
+          <span><i class="swatch vec"></i> Vector chuyển động</span>
+        </div>
+      </section>
+
+      <aside class="sidebar">
+        <div class="card">
+          <h2>Góc tư thế (Attitude)</h2>
+          <div class="metrics-grid">
+            <div class="metric">
+              <span class="label">Roll (X)</span>
+              <span class="val" id="valRoll">0.0°</span>
+            </div>
+            <div class="metric">
+              <span class="label">Pitch (Y)</span>
+              <span class="val" id="valPitch">0.0°</span>
+            </div>
+            <div class="metric">
+              <span class="label">Yaw (Z)</span>
+              <span class="val" id="valYaw">0.0°</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Gia tốc thế giới (m/s²)</h2>
+          <div class="metrics-grid">
+            <div class="metric">
+              <span class="label">aX (Trái/Phải)</span>
+              <span class="val x-col" id="valAx">0.00</span>
+            </div>
+            <div class="metric">
+              <span class="label">aY (Tiến/Lùi)</span>
+              <span class="val y-col" id="valAy">0.00</span>
+            </div>
+            <div class="metric">
+              <span class="label">aZ (Lên/Xuống)</span>
+              <span class="val z-col" id="valAz">0.00</span>
+            </div>
+          </div>
+          <canvas id="accChart" width="320" height="140"></canvas>
+        </div>
+
+        <div class="card">
+          <h2>Vận tốc ước lượng (m/s)</h2>
+          <div class="metrics-grid">
+            <div class="metric">
+              <span class="label">vX</span>
+              <span class="val" id="valVx">0.00</span>
+            </div>
+            <div class="metric">
+              <span class="label">vY</span>
+              <span class="val" id="valVy">0.00</span>
+            </div>
+            <div class="metric">
+              <span class="label">vZ</span>
+              <span class="val" id="valVz">0.00</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card log-card">
+          <h2>Nhật ký Serial</h2>
+          <pre id="serialLog" class="serial-log"></pre>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
